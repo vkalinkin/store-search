@@ -53,6 +53,7 @@ const Typeahead = ({ suggestions }) => {
   return (
     <>
       <input
+        className="searchBox"
         type="text"
         onChange={onChange}
         value={input}

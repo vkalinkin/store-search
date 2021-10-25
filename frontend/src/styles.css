@@ -16,9 +16,7 @@
   padding: 4px
 }
 
-
-
-.suggestion-highlighted, .suggestions li:hover  {
+.suggestions li:hover  {
   background-color: rgb(12, 11, 117);
   color: white;
 }

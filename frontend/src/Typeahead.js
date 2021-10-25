@@ -1,65 +1,56 @@
 import { useState } from "react";
+import "./styles.css";
 
-const Typeahead = ({ suggestions }) => {
+function Typeahead(){
 
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [stores, setStores] = useState([]);
   const [input, setInput] = useState("");
 
-  const onChange = (e) => {
-    const userInput = e.target.value;
+  function handleChange(event) {
+    setInput(event.target.value);
+    const userInput = event.target.value;
 
-    const unLinked = suggestions.filter(
-      (suggestion) =>
-        suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
-    );
+    if (userInput === "") {
+      setStores([])
+    } else {
+      const fetchURL = 'http://localhost/backend/stores?search=' + userInput;
+      fetch(fetchURL)
+        .then(response => response.json())
+        .then(data => setStores(data.stores));
+    }
+  }
 
-    setInput(e.target.value);
-    setFilteredSuggestions(unLinked);
-    setActiveSuggestionIndex(0);
-    setShowSuggestions(true);
-  };
 
-  const onClick = (e) => {
-    setFilteredSuggestions([]);
-    setInput(e.target.innerText);
-    setActiveSuggestionIndex(0);
-    setShowSuggestions(false);
-  };
+  function listClick(event) {
+    const clickedName = event.target.getAttribute('storename');
+    console.log('clicked: ', clickedName);
+    setInput(clickedName);
+    setStores([]);
+  }
 
-  const SuggestionsListComponent = () => {
-    return filteredSuggestions.length ? (
-      <ul class="suggestions">
-        {filteredSuggestions.map((suggestion, index) => {
-          let className;
-          if (index === activeSuggestionIndex) {
-            className = "suggestion-highlighted";
-          }
-          return (
-            <li className={className} key={suggestion} onClick={onClick}>
-              {suggestion}
-            </li>
-          );
-        })}
-      </ul>
-    ) : (
-      <div class="no-suggestions">
-        <em>No Results Found</em>
-      </div>
-    );
-  };
 
   return (
-    <>
+    <div>
       <input
-        className="searchBox"
         type="text"
-        onChange={onChange}
+        onChange={handleChange}
+        className="searchBox"
         value={input}
+
       />
-      {showSuggestions && input && <SuggestionsListComponent />}
-    </>
-  );
-};
+
+      <div>
+        {stores?.map((store) =>
+          <ul className="suggestions">
+            <li storename = {store.name} onClick = {listClick}>
+              {store.name}
+            </li>
+          </ul>
+        )}
+      </div>
+
+    </div>
+  )
+
+}
 export default Typeahead;

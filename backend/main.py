@@ -19,6 +19,9 @@ def create_app():
     @app.route("/backend/stores", methods=["GET"])
 
     async def stores(request):
+        search = request.args.get("search")
+        filtered = []
+
         stores = [
             {"id": 1, "name": "Buffalo", "tags": "gen3, northeast"},
             {"id": 2, "name": "Gilbert", "tags": "gen3, southwest, kitchen"},
@@ -42,7 +45,14 @@ def create_app():
             {"id": 20, "name": "Scottsdale 142", "tags": "gen4, southwest, kitchen"}
         ]
 
-        return response.json({'stores': stores})
+
+
+        for store in stores:
+            if (search.lower() in store.get("name").lower()):
+                filtered.append(store)
+
+        return response.json({'stores': filtered})
+
 
     return app
 
